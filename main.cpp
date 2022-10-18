@@ -2,39 +2,50 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
-#include <stdlib.h>
+#include <string>
 
 using namespace std;
 
-
 int main()
 {
-    cout << inf_int(-111) << endl;
 
-    inf_int a, e;
-    inf_int b(100);
-    inf_int c("-321111111111122222222222233333333333444444444445555555555");
-    inf_int d("123451987651234572749499923455022211");
-
-    inf_int f=d;
-    inf_int g(f);
-
-    // cin >> g ;   // not required
-
-    a=b*c;
-    // e=g/f;       // not required
-
-    b=c-d;
-
-    if (f==d) {
-        cout << "a : " << a << endl;
-        cout << "b : " << b << endl;
-        cout << "c : " << c << endl;
-        cout << "d : " << d << endl;
-        // cout << "e : " << e << endl;
-        cout << "f : " << f << endl;
-        // cout << "g : " << g << endl;
-        cout << c * d << endl;
+    while (1) {
+        string input, n1, n2, op;
+        inf_int result;
+        cout << "Input : ";
+        getline(cin, input);        //  input에 엔터까지 입력받기
+        if (input == "0") {
+            cout << "Exit the program.";
+            break;
+        }
+        int length = input.length();
+        int space_first = 0, space_second = 0;      //1, 2번 째 스페이스바 위치
+        for (int i = 0; i < length; i++) {
+            if (input[i] == ' ') {
+                if (space_first == 0)
+                    space_first = i;
+                else {
+                    space_second = i;
+                    break;
+                }
+            }
+        }   
+        n1 = input.substr(0, space_first);                 //앞 숫자 
+        op = input.substr(space_first + 1, 1);            //연산자
+        n2 = input.substr(space_second + 1);                   //뒷 숫자
+        if (op == "+") {    
+            result = inf_int(n1.c_str()) + inf_int(n2.c_str());
+        }
+        else if (op == "-") {
+            result = inf_int(n1.c_str()) - inf_int(n2.c_str());
+        }
+        else if (op == "*") {
+            result = inf_int(n1.c_str()) * inf_int(n2.c_str());
+        }
+        else {
+            cout << "Invalid operator." << endl;
+        }
+        cout << "Output : " << result << endl;
     }
 
     return 0;
