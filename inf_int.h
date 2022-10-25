@@ -1,6 +1,6 @@
 #ifndef _INF_INT_H_
 #define _INF_INT_H_
-
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <vector>
 #include <complex>

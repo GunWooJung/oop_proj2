@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "inf_int.h"
 #include <cmath>
 #include <cstring>
@@ -47,6 +48,7 @@ inf_int::inf_int() {
 
 inf_int::inf_int(int n) {
     length = (int) log10(std::abs(n)) + 1;
+
     digits = new char[length + 1];
     digits[length] = 0;
     the_sign = n >= 0;
@@ -117,6 +119,13 @@ bool operator<(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator+(const inf_int &n1, const inf_int &n2) {
+
+    /*std::cout << "operator+" << std::endl;
+    std::cout << "n1 : " << n1 << std::endl;
+    std::cout << "n2 : " << n2 << std::endl;*/
+    if (n1.length == 1 && n1.digits[0] == '0') return n2;
+    if (n2.length == 1 && n2.digits[0] == '0') return n1;
+
     if(n1.the_sign ^ n2.the_sign) return n1 - n2;
     int carry = 0;
     int length = std::max(n1.length, n2.length) + 1;
@@ -139,6 +148,18 @@ inf_int operator+(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator-(const inf_int &n1, const inf_int &n2) {
+    /*std::cout << "operator-" << std::endl;
+    std::cout << "n1 : " << n1 << std::endl;
+    std::cout << "n2 : " << n2 << std::endl;*/
+    if (n1.length == 1 && n1.digits[0] == '0') {
+        inf_int ret = n2;
+        ret.the_sign = !ret.the_sign;
+        return ret;
+    }
+    if (n2.length == 1 && n2.digits[0] == '0') {
+        return n1;
+    }
+
     if(n1.the_sign ^ n2.the_sign) {
         inf_int tmp = n2;
         tmp.the_sign = !tmp.the_sign;

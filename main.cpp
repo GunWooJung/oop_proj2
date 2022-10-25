@@ -1,3 +1,4 @@
+
 #include "inf_int.h"
 #include <iostream>
 #include <string.h>
@@ -80,29 +81,21 @@ int main()
 
         vector<inf_int> postStack;
         for (int i = 0; i < postFix.size(); i++) {
-            if (postFix[i] == "+") {
-                inf_int result;
-                result = result + postStack[postStack.size() - 1];
+            if (postFix[i] == "+" || postFix[i] == "-" || postFix[i] == "*") {
+                inf_int n2 = postStack[postStack.size() - 1];
                 postStack.pop_back();
-                result = result + postStack[postStack.size() - 1];
+                inf_int n1 = postStack[postStack.size() - 1];
                 postStack.pop_back();
-                postStack.push_back(result);
-            }
-            else if (postFix[i] == "-") {
-                inf_int result;
-                result = result + postStack[postStack.size() - 1];
-                postStack.pop_back();
-                result = result - postStack[postStack.size() - 1];
-                postStack.pop_back();
-                postStack.push_back(result);
-            }
-            else if (postFix[i] == "*") {
-                inf_int result;
-                result = result + postStack[postStack.size() - 1];
-                postStack.pop_back();
-                result = result * postStack[postStack.size() - 1];
-                postStack.pop_back();
-                postStack.push_back(result);
+                
+                if (postFix[i] == "+") {
+                    postStack.push_back(n1 + n2);
+                }
+                else if (postFix[i] == "-") {
+                    postStack.push_back(n1 - n2);
+                }
+                else if (postFix[i] == "*") {
+                    postStack.push_back(n1 * n2);
+                }
             }
             else {
                 postStack.push_back(inf_int(postFix[i].c_str()));
