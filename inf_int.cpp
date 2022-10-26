@@ -1,10 +1,5 @@
 #define _USE_MATH_DEFINES
 #include "inf_int.h"
-#include <cmath>
-#include <cstring>
-#include <algorithm>
-#include <vector>
-
 
 //
 // to be filled by students
@@ -36,6 +31,38 @@ int inf_int::compare_abs(const inf_int &n1, const inf_int &n2) {
         else if(n2.digits[i] > n1.digits[i]) return -1;
     }
     return 0;
+}
+
+
+void fft(std::vector<base> &a, bool inv) {
+    int n = (int)a.size();
+    for (int i = 1, j = 0; i < n; i++) {
+        int bit = n >> 1;
+        while (!((j ^= bit) & bit)) bit >>= 1;
+        if (i < j) std::swap(a[i], a[j]);
+    }
+    for (int i = 1; i < n; i <<= 1) {
+        double x = (inv ? 1 : -1) * M_PI / i;
+        base w = { cos(x), sin(x) };
+        for (int j = 0; j < n; j += i << 1) {
+            base th(1);
+            for (int k = 0; k < i; k++) {
+                base tmp = a[i + j + k] * th;
+                a[i + j + k] = a[j + k] - tmp;
+                a[j + k] += tmp;
+                th *= w;
+            }
+        }
+    }
+    if (inv) {
+        for (int i = 0; i < n; i++) a[i] /= n;
+    }
+}
+
+int power_of_2_ge_than(int n) {
+    int ret = 1;
+    while (n > ret) ret <<= 1;
+    return ret;
 }
 
 inf_int::inf_int() {
@@ -90,13 +117,13 @@ inf_int::inf_int(const inf_int &origin) {
 }
 
 inf_int::~inf_int() {
-    delete digits;
+    delete[] digits;
 }
 
 inf_int &inf_int::operator=(const inf_int &source) {
     if(this == &source) return *this;
 
-    delete digits;
+    delete[] digits;
     length = source.length;
     the_sign = source.the_sign;
     digits = new char[length + 1];
@@ -126,10 +153,6 @@ bool operator<(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator+(const inf_int &n1, const inf_int &n2) {
-
-    /*std::cout << "operator+" << std::endl;
-    std::cout << "n1 : " << n1 << std::endl;
-    std::cout << "n2 : " << n2 << std::endl;*/
     if (n1.length == 1 && n1.digits[0] == '0') return n2;
     if (n2.length == 1 && n2.digits[0] == '0') return n1;
 
@@ -138,7 +161,6 @@ inf_int operator+(const inf_int &n1, const inf_int &n2) {
         tmp.the_sign = !tmp.the_sign;
         return n1 - tmp;
     }
-
 
     int carry = 0;
     int length = std::max(n1.length, n2.length) + 1;
@@ -161,9 +183,6 @@ inf_int operator+(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator-(const inf_int &n1, const inf_int &n2) {
-    /*std::cout << "operator-" << std::endl;
-    std::cout << "n1 : " << n1 << std::endl;
-    std::cout << "n2 : " << n2 << std::endl;*/
     if (n1.length == 1 && n1.digits[0] == '0') {
         inf_int ret = n2;
         ret.the_sign = !ret.the_sign;
@@ -178,7 +197,6 @@ inf_int operator-(const inf_int &n1, const inf_int &n2) {
         tmp.the_sign = !tmp.the_sign;
         return n1 + tmp;
     }
-
 
     int borrow = 0;
     inf_int _n1 = n1, _n2 = n2;
@@ -200,7 +218,7 @@ inf_int operator-(const inf_int &n1, const inf_int &n2) {
     int i = 0;
     while(tmp[i] == '0') i++;
     inf_int ret = {tmp + i};
-    ret.the_sign = (inf_int::compare_abs(n1, n2) < 0) ? false : true;
+    ret.the_sign = inf_int::compare_abs(n1, n2) >= 0;
     
     if (!n1.the_sign) ret.the_sign = !ret.the_sign;
 
@@ -239,67 +257,13 @@ inf_int operator*(const inf_int& n1, const inf_int& n2) {
 
     inf_int res;
     res.length = ret.size();
-    res.digits = new char[res.length];
+    res.digits = new char[res.length + 1];
     for(int i=0;i<res.length;i++) res.digits[i] = ret[i] + '0';
-
+    res.digits[res.length] = 0;
     res.the_sign = !(n1.the_sign ^ n2.the_sign);
     return res;
 }
 
-//inf_int operator*(const inf_int& n1, const inf_int& n2) {
-//    inf_int sum;
-//    int length = n1.length + 1;
-//    for (int i = 0; i < n2.length; i++) {
-//        char* tmp = new char[length + i + 1];
-//        tmp[length + i] = 0;
-//        std::fill(tmp, tmp + length + i, '0');
-//        int carry = 0;
-//        for (int j = 0; j < length; j++) {
-//            int n1_digit = n1.length > j ? n1.digits[j] - '0' : 0;
-//            int n2_digit = n2.digits[i] - '0';
-//            tmp[j + i] = (n1_digit * n2_digit + carry) % 10 + '0';
-//            carry = (n1_digit * n2_digit + carry) / 10;
-//        }
-//        std::reverse(tmp, tmp + length + i);
-//        int idx = 0;
-//        while (idx < length + i - 1 && tmp[idx] == '0') idx++;
-//        sum = sum + inf_int(tmp + idx);
-//        delete[] tmp;
-//    }
-//    sum.the_sign = (n1.the_sign == n2.the_sign);
-//    return sum;
-//}
-
-void fft(std::vector<base> &a, bool inv) {
-    int n = (int)a.size();
-    for (int i = 1, j = 0; i < n; i++) {
-        int bit = n >> 1;
-        while (!((j ^= bit) & bit)) bit >>= 1;
-        if (i < j) std::swap(a[i], a[j]);
-    }
-    for (int i = 1; i < n; i <<= 1) {
-        double x = (inv ? 1 : -1) * M_PI / i;
-        base w = { cos(x), sin(x) };
-        for (int j = 0; j < n; j += i << 1) {
-            base th(1);
-            for (int k = 0; k < i; k++) {
-                base tmp = a[i + j + k] * th;
-                a[i + j + k] = a[j + k] - tmp;
-                a[j + k] += tmp;
-                th *= w;
-            }
-        }
-    }
-    if (inv) {
-        for (int i = 0; i < n; i++) a[i] /= n;
-    }
-}
-
-int power_of_2_ge_than(int n) {
-    int ret = 1;
-    while (n > ret) ret <<= 1;
-    return ret;
-}
 
 std::vector<int> inf_int::multiply(std::vector<int> &A, std::vector<int> &B) {
     std::vector<base> a(A.begin(), A.end());

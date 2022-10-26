@@ -4,6 +4,10 @@
 #include <iostream>
 #include <vector>
 #include <complex>
+#include <cmath>
+#include <cstring>
+#include <algorithm>
+#include <vector>
 
 typedef std::complex<double> base;
 
