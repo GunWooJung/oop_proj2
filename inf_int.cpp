@@ -1,3 +1,4 @@
+#define _USE_MATH_DEFINES
 #include "inf_int.h"
 #include <cmath>
 #include <cstring>
@@ -46,7 +47,15 @@ inf_int::inf_int() {
 }
 
 inf_int::inf_int(int n) {
+    if (n == 0) {
+        length = 1;
+        digits = new char[length + 1];
+        digits[0] = '0';
+        digits[1] = 0;
+        the_sign = true;
+    }
     length = (int) log10(std::abs(n)) + 1;
+
     digits = new char[length + 1];
     digits[length] = 0;
     the_sign = n >= 0;
@@ -117,7 +126,20 @@ bool operator<(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator+(const inf_int &n1, const inf_int &n2) {
-    if(n1.the_sign ^ n2.the_sign) return n1 - n2;
+
+    /*std::cout << "operator+" << std::endl;
+    std::cout << "n1 : " << n1 << std::endl;
+    std::cout << "n2 : " << n2 << std::endl;*/
+    if (n1.length == 1 && n1.digits[0] == '0') return n2;
+    if (n2.length == 1 && n2.digits[0] == '0') return n1;
+
+    if (n1.the_sign ^ n2.the_sign) {
+        inf_int tmp = n2;
+        tmp.the_sign = !tmp.the_sign;
+        return n1 - tmp;
+    }
+
+
     int carry = 0;
     int length = std::max(n1.length, n2.length) + 1;
     char *tmp = new char[length + 1];
@@ -139,11 +161,25 @@ inf_int operator+(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator-(const inf_int &n1, const inf_int &n2) {
+    /*std::cout << "operator-" << std::endl;
+    std::cout << "n1 : " << n1 << std::endl;
+    std::cout << "n2 : " << n2 << std::endl;*/
+    if (n1.length == 1 && n1.digits[0] == '0') {
+        inf_int ret = n2;
+        ret.the_sign = !ret.the_sign;
+        return ret;
+    }
+    if (n2.length == 1 && n2.digits[0] == '0') {
+        return n1;
+    }
+
     if(n1.the_sign ^ n2.the_sign) {
         inf_int tmp = n2;
         tmp.the_sign = !tmp.the_sign;
         return n1 + tmp;
     }
+
+
     int borrow = 0;
     inf_int _n1 = n1, _n2 = n2;
     if(inf_int::compare_abs(n2, n1) > 0) {
@@ -165,6 +201,8 @@ inf_int operator-(const inf_int &n1, const inf_int &n2) {
     while(tmp[i] == '0') i++;
     inf_int ret = {tmp + i};
     ret.the_sign = (inf_int::compare_abs(n1, n2) < 0) ? false : true;
+    
+    if (!n1.the_sign) ret.the_sign = !ret.the_sign;
 
     delete[] tmp;
     return ret;
@@ -208,26 +246,27 @@ inf_int operator*(const inf_int& n1, const inf_int& n2) {
     return res;
 }
 
-//inf_int operator*(const inf_int &n1, const inf_int &n2) {
+//inf_int operator*(const inf_int& n1, const inf_int& n2) {
 //    inf_int sum;
 //    int length = n1.length + 1;
-//    for(int i=0;i<n2.length;i++){
-//        char *tmp = new char[length + i + 1];
+//    for (int i = 0; i < n2.length; i++) {
+//        char* tmp = new char[length + i + 1];
 //        tmp[length + i] = 0;
 //        std::fill(tmp, tmp + length + i, '0');
 //        int carry = 0;
-//        for(int j=0;j<length;j++){
+//        for (int j = 0; j < length; j++) {
 //            int n1_digit = n1.length > j ? n1.digits[j] - '0' : 0;
 //            int n2_digit = n2.digits[i] - '0';
 //            tmp[j + i] = (n1_digit * n2_digit + carry) % 10 + '0';
 //            carry = (n1_digit * n2_digit + carry) / 10;
 //        }
 //        std::reverse(tmp, tmp + length + i);
-//        int idx=0;
-//        while(idx < length + i - 1 && tmp[idx] == '0') idx++;
+//        int idx = 0;
+//        while (idx < length + i - 1 && tmp[idx] == '0') idx++;
 //        sum = sum + inf_int(tmp + idx);
-//        free(tmp);
+//        delete[] tmp;
 //    }
+//    sum.the_sign = (n1.the_sign == n2.the_sign);
 //    return sum;
 //}
 
