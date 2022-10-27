@@ -282,3 +282,42 @@ std::vector<int> inf_int::multiply(std::vector<int> &A, std::vector<int> &B) {
         ret[i] = (int)round(a[i].real());
     return ret;
 }
+
+inf_int operator^(const inf_int &a, const inf_int &n) {
+    // power 
+    // a^n
+    // n >= 0
+    inf_int res = 1;
+    inf_int _a = a;
+    inf_int _n = n;
+    inf_int zero;
+
+    while (_n > zero) {
+        if ((int)(_n.digits[0] - '0') % 2 == 1)
+            res = res * _a; // need memory deallocation?
+        _a = _a * _a;
+        
+        // need inf_int operator/
+        int length = _n.length;
+        char* tmp = new char[length + 1];
+        tmp[length] = 0;
+
+        int down = 0;
+        for (int i = length-1; i >= 0; i--) {
+            tmp[i] = ((int)(_n.digits[i] - '0') + down) / 2 + '0';
+            if (((int)(_n.digits[i] - '0') + down) % 2 == 1) down = 10;
+            else down = 0;
+        }
+
+        std::reverse(tmp, tmp + length);
+        int i = 0;
+        if (tmp[i] == '0' && strlen(tmp) != 1) i++;
+        _n = { tmp + i };
+
+        delete[] tmp; 
+    }
+    if (a.the_sign == false) 
+        res.the_sign = (int)(n.digits[0] - '0') % 2 == 0 ? true : false;
+    return res;
+}
+

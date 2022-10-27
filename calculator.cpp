@@ -4,6 +4,7 @@ int calculator::prior(std::string s) {
     if (s == "+") return 1;
     else if (s == "-") return 1;
     else if (s == "*") return 2;
+    else if (s == "^") return 3;
     else return -1;
 };
 
@@ -45,7 +46,7 @@ void calculator::run() {
                 }
                 stack.pop_back();
             }
-            else if (token[i] == "+" || token[i] == "-" || token[i] == "*") {
+            else if (token[i] == "+" || token[i] == "-" || token[i] == "*" || token[i] == "^") {
                 if (stack.empty())
                     stack.push_back(token[i]);
                 else {
@@ -67,10 +68,9 @@ void calculator::run() {
             postFix.push_back(pop);
             stack.pop_back();
         }
-
         std::vector<inf_int> postStack;
         for (int i = 0; i < postFix.size(); i++) {
-            if (postFix[i] == "+" || postFix[i] == "-" || postFix[i] == "*") {
+            if (postFix[i] == "+" || postFix[i] == "-" || postFix[i] == "*" || postFix[i] == "^") {
                 inf_int n2 = postStack[postStack.size() - 1];
                 postStack.pop_back();
                 inf_int n1 = postStack[postStack.size() - 1];
@@ -84,6 +84,9 @@ void calculator::run() {
                 }
                 else if (postFix[i] == "*") {
                     postStack.push_back(n1 * n2);
+                }
+                else if (postFix[i] == "^") {                    
+                    postStack.push_back(n1 ^ n2);
                 }
             }
             else {
