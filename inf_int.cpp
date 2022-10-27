@@ -33,6 +33,11 @@ int inf_int::compare_abs(const inf_int &n1, const inf_int &n2) {
     return 0;
 }
 
+bool inf_int::isZero(const inf_int& n) {
+    if (n.length == 1 && n.digits[0] == '0') return true;
+    return false;
+}
+
 
 void fft(std::vector<base> &a, bool inv) {
     int n = (int)a.size();
@@ -153,11 +158,13 @@ bool operator<(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator+(const inf_int &n1, const inf_int &n2) {
-    if (n1.length == 1 && n1.digits[0] == '0') return n2;
-    if (n2.length == 1 && n2.digits[0] == '0') return n1;
+    if (inf_int::isZero(n1)) return n2;
+    if (inf_int::isZero(n2)) return n1;
 
     if (n1.the_sign ^ n2.the_sign) {
-        inf_int tmp = n2;
+        inf_int tmp;
+        if (!(inf_int::compare_abs(n1, n2))) return tmp;
+        tmp = n2;
         tmp.the_sign = !tmp.the_sign;
         return n1 - tmp;
     }
@@ -183,12 +190,12 @@ inf_int operator+(const inf_int &n1, const inf_int &n2) {
 }
 
 inf_int operator-(const inf_int &n1, const inf_int &n2) {
-    if (n1.length == 1 && n1.digits[0] == '0') {
+    if (inf_int::isZero(n1)) {
         inf_int ret = n2;
         ret.the_sign = !ret.the_sign;
         return ret;
     }
-    if (n2.length == 1 && n2.digits[0] == '0') {
+    if (inf_int::isZero(n2)) {
         return n1;
     }
 
@@ -196,6 +203,11 @@ inf_int operator-(const inf_int &n1, const inf_int &n2) {
         inf_int tmp = n2;
         tmp.the_sign = !tmp.the_sign;
         return n1 + tmp;
+    }
+
+    if (!(inf_int::compare_abs(n1, n2))) { // n1 = n2
+        inf_int zero;
+        return zero;
     }
 
     int borrow = 0;
@@ -234,6 +246,11 @@ std::ostream &operator<<(std::ostream &os, const inf_int &n) {
 }
 
 inf_int operator*(const inf_int& n1, const inf_int& n2) {
+    if (inf_int::isZero(n1) || inf_int::isZero(n2)) {
+        inf_int zero;
+        return zero;
+    }
+
     std::vector<int> a;
     std::vector<int> b;
 
