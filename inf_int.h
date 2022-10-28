@@ -24,6 +24,7 @@ private :
     static void swap(inf_int&, inf_int&);
     static int compare_abs(const inf_int&, const inf_int&);
     static std::vector<int> multiply(std::vector<int> &, std::vector<int> &);
+    static bool isZero(const inf_int&);
 
 public :
     inf_int();               // assign 0 as a default value
@@ -44,6 +45,8 @@ public :
     friend inf_int operator*(const inf_int& , const inf_int&);
 //    // friend inf_int operator/(const inf_int& , const inf_int&); // not required
 //
+    friend inf_int operator^(const inf_int& , const inf_int&);
+    
     friend std::ostream& operator<<(std::ostream& , const inf_int&);
     // friend istream& operator>>(istream& , inf_int&);    // not required
 };
