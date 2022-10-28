@@ -3,8 +3,8 @@ Project Description
 
 ### TO-DO
 - [ ] Implementation
-  - [ ] Creative features <- 건우 나눗셈, power(a, 10) 동규님
-  - [ ] Testing / Debug <- 다 같이 
+  - [ ] Creative features
+  - [ ] Testing / Debug
   - [ ] Refactor class design
 - [ ] Project Report
   - [ ] project  title, list of team members, presentation speaker name, and brief project description (summary)
