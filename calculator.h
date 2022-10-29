@@ -10,6 +10,7 @@
 class calculator {
 private:
     static int prior(std::string);
+    static bool verifyToken(std::string);
 public:
     static void run();
 };
