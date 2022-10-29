@@ -9,7 +9,11 @@
 
 class calculator {
 private:
-    static int prior(std::string);
+    static int priority(std::string);           //Priority of operator
+    static bool verifyToken(std::string);       //Verifing whether token is vaild
+    static void divideByToken(const std::string& , std::vector<std::string>&);  //Divide input string with token
+    static void covertToPostFix(const std::vector<std::string>& , std::vector<std::string>&); //Convert to PostFix notation
+    static inf_int calculatePostFix(const std::vector<std::string>&);     //Calculating PostFix notation
 public:
     static void run();
 };
