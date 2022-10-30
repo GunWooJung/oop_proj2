@@ -312,6 +312,7 @@ inf_int operator/(const inf_int& n1, const inf_int& n2) {
     inf_int dividend = n1; // dividend = divisor * quotient + remainder
     inf_int divisor = n2;
     inf_int quotient;
+    if (inf_int::isZero(n1)) return quotient;
     dividend.the_sign = true;//transform to abs
     divisor.the_sign = true;//transform to abs
     for (int i = n1.length - n2.length; i >= 0; i--) {
