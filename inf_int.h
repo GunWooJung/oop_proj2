@@ -13,7 +13,7 @@ typedef std::complex<double> base;
 
 class inf_int
 {
-private :
+private:
     char* digits;  // You may modify this to "string digits;" if you want.
     unsigned int length;
     bool the_sign;   // true if positive , false if negative.
@@ -23,31 +23,30 @@ private :
 
     static void swap(inf_int&, inf_int&);
     static int compare_abs(const inf_int&, const inf_int&);
-    static std::vector<int> multiply(std::vector<int> &, std::vector<int> &);
+    static std::vector<int> multiply(std::vector<int>&, std::vector<int>&);
     static bool isZero(const inf_int&);
 
-public :
+public:
     inf_int();               // assign 0 as a default value
     inf_int(int);
-    inf_int(const char* );
+    inf_int(const char*);
     inf_int(const inf_int&); // copy constructor
     ~inf_int(); // destructor
 
     inf_int& operator=(const inf_int&); // assignment operator
 
-    friend bool operator==(const inf_int& , const inf_int&);
-    friend bool operator!=(const inf_int& , const inf_int&);
-    friend bool operator>(const inf_int& , const inf_int&);
-    friend bool operator<(const inf_int& , const inf_int&);
+    friend bool operator==(const inf_int&, const inf_int&);
+    friend bool operator!=(const inf_int&, const inf_int&);
+    friend bool operator>(const inf_int&, const inf_int&);
+    friend bool operator<(const inf_int&, const inf_int&);
 
-    friend inf_int operator+(const inf_int& , const inf_int&);
-    friend inf_int operator-(const inf_int& , const inf_int&);
-    friend inf_int operator*(const inf_int& , const inf_int&);
-//    // friend inf_int operator/(const inf_int& , const inf_int&); // not required
-//
-    friend inf_int operator^(const inf_int& , const inf_int&);
-    
-    friend std::ostream& operator<<(std::ostream& , const inf_int&);
+    friend inf_int operator+(const inf_int&, const inf_int&);
+    friend inf_int operator-(const inf_int&, const inf_int&);
+    friend inf_int operator*(const inf_int&, const inf_int&);
+    friend inf_int operator/(const inf_int& , const inf_int&); // not required
+    friend inf_int operator^(const inf_int&, const inf_int&);
+
+    friend std::ostream& operator<<(std::ostream&, const inf_int&);
     // friend istream& operator>>(istream& , inf_int&);    // not required
 };
 
