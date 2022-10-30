@@ -38,7 +38,6 @@ bool inf_int::isZero(const inf_int& n) {
     return false;
 }
 
-
 void fft(std::vector<base>& a, bool inv) {
     int n = (int)a.size();
     for (int i = 1, j = 0; i < n; i++) {
@@ -96,7 +95,7 @@ inf_int::inf_int(int n) {
         while (n != 0) {
             int digit = n % 10;
             n /= 10;
-            digits[idx++] = digit + '0';
+            digits[idx++] = (char)(digit + '0');
         }
     }
 }
@@ -112,6 +111,7 @@ inf_int::inf_int(const char* n) {
     digits[length] = 0;
     strcpy(digits, n);
     std::reverse(digits, digits + length);
+    if(isZero(*this)) this->the_sign=true;
 }
 
 inf_int::inf_int(const inf_int& origin) {
@@ -159,30 +159,24 @@ bool operator<(const inf_int& n1, const inf_int& n2) {
 }
 
 inf_int operator+(const inf_int& n1, const inf_int& n2) {
-    if (inf_int::isZero(n1)) return n2;
-    if (inf_int::isZero(n2)) return n1;
-
     if (n1.the_sign ^ n2.the_sign) {
         inf_int tmp;
-        if (!(inf_int::compare_abs(n1, n2))) return tmp;
         tmp = n2;
         tmp.the_sign = !tmp.the_sign;
         return n1 - tmp;
     }
 
     int carry = 0;
-    int length = std::max(n1.length, n2.length) + 1;
-    char* tmp = new char[length + 1];
-    tmp[length] = 0;
+    unsigned int length = std::max(n1.length, n2.length) + 1;
+    char* tmp = new char[length + 1]; tmp[length] = 0;
     for (int i = 0; i < length; i++) {
         int n1_digit = n1.length > i ? n1.digits[i] - '0' : 0;
         int n2_digit = n2.length > i ? n2.digits[i] - '0' : 0;
-        tmp[i] = (carry + n1_digit + n2_digit) % 10 + '0';
+        tmp[i] = (char)((carry + n1_digit + n2_digit) % 10 + '0');
         carry = (carry + n1_digit + n2_digit) / 10;
     }
     std::reverse(tmp, tmp + length);
-    int i = 0;
-    while (tmp[i] == '0') i++;
+    int i = 0; while(tmp[i] == '0' & i < length - 1) i++;
     inf_int ret = { tmp + i };
     ret.the_sign = n1.the_sign;
 
@@ -191,24 +185,10 @@ inf_int operator+(const inf_int& n1, const inf_int& n2) {
 }
 
 inf_int operator-(const inf_int& n1, const inf_int& n2) {
-    if (inf_int::isZero(n1)) {
-        inf_int ret = n2;
-        ret.the_sign = !ret.the_sign;
-        return ret;
-    }
-    if (inf_int::isZero(n2)) {
-        return n1;
-    }
-
     if (n1.the_sign ^ n2.the_sign) {
         inf_int tmp = n2;
         tmp.the_sign = !tmp.the_sign;
         return n1 + tmp;
-    }
-
-    if (!(inf_int::compare_abs(n1, n2))) { // n1 = n2
-        inf_int zero;
-        return zero;
     }
 
     int borrow = 0;
@@ -216,24 +196,20 @@ inf_int operator-(const inf_int& n1, const inf_int& n2) {
     if (inf_int::compare_abs(n2, n1) > 0) {
         inf_int::swap(_n1, _n2);
     }
-    int length = std::max(n1.length, n2.length);
-    char* tmp = new char[length + 1];
-    tmp[length] = 0;
+    unsigned int length = std::max(n1.length, n2.length);
+    char* tmp = new char[length + 1]; tmp[length] = 0;
     for (int i = 0; i < length; i++) {
         int n1_digit = _n1.length > i ? _n1.digits[i] - '0' : 0;
         int n2_digit = _n2.length > i ? _n2.digits[i] - '0' : 0;
         int tmp_digit = (n1_digit - n2_digit - borrow);
-        tmp[i] = (tmp_digit >= 0 ? tmp_digit : 10 + tmp_digit) + '0';
+        tmp[i] = (char)((tmp_digit >= 0 ? tmp_digit : 10 + tmp_digit) + '0');
         borrow = tmp_digit < 0 ? 1 : 0;
     }
 
     std::reverse(tmp, tmp + length);
-    int i = 0;
-    while (tmp[i] == '0') i++;
+    int i = 0; while (tmp[i] == '0' && i < length - 1) i++;
     inf_int ret = { tmp + i };
-    ret.the_sign = inf_int::compare_abs(n1, n2) >= 0;
-
-    if (!n1.the_sign) ret.the_sign = !ret.the_sign;
+    if(!inf_int::isZero(ret)) ret.the_sign = !(n1.the_sign ^ (inf_int::compare_abs(n1, n2) > 0));
 
     delete[] tmp;
     return ret;
@@ -247,13 +223,9 @@ std::ostream& operator<<(std::ostream& os, const inf_int& n) {
 }
 
 inf_int operator*(const inf_int& n1, const inf_int& n2) {
-    if (inf_int::isZero(n1) || inf_int::isZero(n2)) {
-        inf_int zero;
-        return zero;
-    }
+    if (inf_int::isZero(n1) || inf_int::isZero(n2)) return {};
 
-    std::vector<int> a;
-    std::vector<int> b;
+    std::vector<int> a, b;
 
     for (int i = 0; i < n1.length; i++) a.push_back(n1.digits[i] - '0');
     for (int i = 0; i < n2.length; i++) b.push_back(n2.digits[i] - '0');
@@ -270,18 +242,15 @@ inf_int operator*(const inf_int& n1, const inf_int& n2) {
         }
         ++i;
     }
-
     while (!ret.empty() && ret.back() == 0) ret.pop_back();
 
     inf_int res;
     res.length = ret.size();
-    res.digits = new char[res.length + 1];
+    res.digits = new char[res.length + 1]; res.digits[res.length] = 0;
     for (int i = 0; i < res.length; i++) res.digits[i] = ret[i] + '0';
-    res.digits[res.length] = 0;
     res.the_sign = !(n1.the_sign ^ n2.the_sign);
     return res;
 }
-
 
 std::vector<int> inf_int::multiply(std::vector<int>& A, std::vector<int>& B) {
     std::vector<base> a(A.begin(), A.end());

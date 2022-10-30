@@ -23,7 +23,7 @@ bool calculator::verifyToken(std::string s) {
 void calculator::divideByToken(const std::string& input, std::vector<std::string>& token){
     int length = input.length();
     int index = 0;
-    for (int i = 0; i < length; i++) {                                   //divide token by spacebar
+    for (int i = 0; i < length; i++) {                                   //divide token by space bar
         if (input[i] == ' ') {
             std::string addToken = input.substr(index, i - index);
             if (!verifyToken(addToken)) throw addToken;
@@ -107,6 +107,7 @@ inf_int calculator::calculatePostFix(const std::vector<std::string>& postFix) {
     result = postStack[0];
     return result;
 }
+
 void calculator::run() {
     while (true) {
     try {
@@ -122,9 +123,12 @@ void calculator::run() {
                 std::cout << "Exit the program";
                 break;
             }
+            std::chrono::steady_clock::time_point begin = std::chrono::high_resolution_clock::now();
             divideByToken(input, token);
             covertToPostFix(token, postFix);
             output = calculatePostFix(postFix);
+            std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+            std::cout << "Time elapsed : " << std::chrono::duration_cast<std::chrono::microseconds>(end - begin).count() << "[µs]" << std::endl;
             std::cout << "Output : " <<output << std::endl << std::endl;
         }
         catch (inf_int n) {
