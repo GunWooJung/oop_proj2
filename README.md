@@ -2,10 +2,10 @@
 Project Description
 
 ### TO-DO
-- [ ] Implementation
-  - [ ] Creative features
-  - [ ] Testing / Debug
-  - [ ] Refactor class design
+- [x] Implementation
+  - [x] Creative features
+  - [x] Testing / Debug
+  - [x] Refactor class design
 - [ ] Project Report
   - [ ] project  title, list of team members, presentation speaker name, and brief project description (summary)
   - [ ] how to compile and execute. system requirement for compilation and execution
