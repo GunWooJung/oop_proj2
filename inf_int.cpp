@@ -176,7 +176,7 @@ inf_int operator+(const inf_int& n1, const inf_int& n2) {
         carry = (carry + n1_digit + n2_digit) / 10;
     }
     std::reverse(tmp, tmp + length);
-    int i = 0; while(tmp[i] == '0' & i < length - 1) i++;
+    int i = 0; while(tmp[i] == '0' && i < length - 1) i++;
     inf_int ret = { tmp + i };
     ret.the_sign = n1.the_sign;
 
