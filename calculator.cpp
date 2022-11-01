@@ -31,7 +31,7 @@ bool calculator::verifyNumber(std::string s) {
     return true;
 }
 bool calculator::verifyOperator(std::string s) {
-    if (s == "(" || s == ")" || s == "+" || s == "-" || s == "*" || s == "/") return true;
+    if (s == "(" || s == ")" || s == "+" || s == "-" || s == "*" || s == "/" || s =="^") return true;
     return false;
 }
 bool calculator::verifyVariable(std::string s) {
