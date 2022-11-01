@@ -24,7 +24,7 @@ void test() {
 }
 
 int main() {
-    test();
+//    test();
     calculator c;
     c.run();
     return 0;
