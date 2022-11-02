@@ -31,7 +31,7 @@ bool calculator::verifyNumber(std::string s) {
     return true;
 }
 bool calculator::verifyOperator(std::string s) {
-    if (s == "(" || s == ")" || s == "+" || s == "-" || s == "*" || s == "/" || s == "^") return true;
+    if (s == "(" || s == ")" || s == "+" || s == "-" || s == "*" || s == "/"||s=="^") return true;
     return false;
 }
 bool calculator::verifyVariable(std::string s) {
@@ -120,11 +120,18 @@ inf_int calculator::calculatePostFix(const std::vector<std::string>& postFix) {
     std::vector<inf_int> postStack;
     inf_int result;
     for (int i = 0; i < postFix.size(); i++) {                
-        if (postFix[i] == "+" || postFix[i] == "-" || postFix[i] == "*" || postFix[i] == "^" || postFix[i] == "/") {
-            inf_int n2 = postStack[postStack.size() - 1];
-            postStack.pop_back();
-            inf_int n1 = postStack[postStack.size() - 1];
-            postStack.pop_back();
+        if (verifyOperator(postFix[i])){
+            inf_int n1, n2;
+            if (postStack.size() > 0) {
+                n2 = postStack[postStack.size() - 1];
+                postStack.pop_back();
+            }
+            else throw "ERROR";
+            if (postStack.size() > 0) {
+                n1 = postStack[postStack.size() - 1];
+                postStack.pop_back();
+            }
+            else throw "ERROR";
 
             if (postFix[i] == "+") {
                 postStack.push_back(n1 + n2);
@@ -197,7 +204,7 @@ void calculator::run() {
                 }
                 inFile.close();
                 std::cout << "-----------------------------------" << std::endl;
-                std::cout << "Choose a number of which formula you use(exit 0) : " << std::endl;
+                std::cout << "Choose the number of which formula you use(exit 0) : " << std::endl;
                 std::getline(std::cin, chooseNum);
                 if (chooseNum == "0") {                                                   //Exit the program
                     std::cout << "Exit the program!";
@@ -207,12 +214,12 @@ void calculator::run() {
                 std::vector<std::string> token;
                 std::vector<std::string> postFix;
                 inf_int output; 
-                divideByTokenVariable(formula[index], token);
+                divideByTokenVariable(formula[index], token); 
                 for (int i = 0; i < token.size(); i++) {
                     std::string s;
                     if (verifyVariable(token[i])) {
                         std::cout << token[i] << " : ";
-                        getline(std::cin, s); if (verifyVariable(s)) throw s;
+                        getline(std::cin, s); if (verifyVariable(s)||verifyOperator(s)) throw s;
                         token[i] = s;
                         for (int j = i+1; j < token.size(); j++) {
                             if (token[j] == token[i]) token[j] = s;
@@ -289,7 +296,7 @@ void calculator::run() {
             for (int i = 0; i < 30; i++) std::cout << std::endl;
             }
             else {
-                std::cout << "Error, Please enter number 1 ~ 4"<<std::endl<<std::endl;
+                std::cout << "Error, Please enter number 1 ~ 5"<<std::endl<<std::endl;
             }
         }
          catch (inf_int n) {
