@@ -4,16 +4,14 @@ class NotExistedRentError(Exception):
     def __init__(self):
         super.__init__('존재하지 않는 대여 정보입니다.')
 
-DEFAULT_DEPOSIT = 1000
-DEFAULT_DAILY_RENT_FEE = 10
 class Rent:
 
-    def __init__(self, uuid):
-        self.title = '제목 없음'
-        self.discription = '내용 없음'
-        self.deposit = DEFAULT_DEPOSIT
-        self.daily_rent_fee = DEFAULT_DAILY_RENT_FEE
-        self.lender = 0
+    def __init__(self, title, discription, deposit, daily_rent_fee, lender, uuid):
+        self.title = title
+        self.discription = discription
+        self.deposit = deposit
+        self.daily_rent_fee = daily_rent_fee
+        self.lender = lender
         self.uuid = uuid
 
     def __repr__(self):
